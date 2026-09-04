@@ -6,26 +6,31 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 // Embedder 生成向量的服务
 type Embedder struct {
-	APIURL string
-	Client *http.Client
+	BaseURL string
+	Client  *http.Client
 }
 
 // NewEmbedder 创建Embedder
-func NewEmbedder(apiURL string) *Embedder {
+func NewEmbedder(baseURL string) *Embedder {
+	if baseURL == "" {
+		baseURL = "http://localhost:8002"
+	}
 	return &Embedder{
-		APIURL: apiURL,
-		Client: &http.Client{},
+		BaseURL: baseURL,
+		Client: &http.Client{
+			Timeout: 30 * time.Second,
+		},
 	}
 }
 
 // EmbedRequest 请求
 type EmbedRequest struct {
 	Input []string `json:"input"`
-	Model string   `json:"model"`
 }
 
 // EmbedResponse 响应
@@ -37,9 +42,13 @@ type EmbedResponse struct {
 
 // GetEmbeddings 获取文本向量
 func (e *Embedder) GetEmbeddings(texts []string) ([][]float64, error) {
+	// 注意：URL是 /embed，不是 /
+	url := e.BaseURL + "/embed"
+
+	fmt.Printf("🔍 请求Embedding URL: %s\n", url) // 添加这行调试
+
 	reqBody := EmbedRequest{
 		Input: texts,
-		Model: "BAAI/bge-small-zh-v1.5", // 通过本地服务调用
 	}
 
 	jsonData, err := json.Marshal(reqBody)
@@ -47,7 +56,7 @@ func (e *Embedder) GetEmbeddings(texts []string) ([][]float64, error) {
 		return nil, err
 	}
 
-	resp, err := e.Client.Post(e.APIURL, "application/json", bytes.NewBuffer(jsonData))
+	resp, err := e.Client.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +68,7 @@ func (e *Embedder) GetEmbeddings(texts []string) ([][]float64, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("embedding error: %s", string(body))
+		return nil, fmt.Errorf("embedding error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	var result EmbedResponse
@@ -73,4 +82,19 @@ func (e *Embedder) GetEmbeddings(texts []string) ([][]float64, error) {
 	}
 
 	return embeddings, nil
+}
+
+// HealthCheck 检查服务是否可用
+func (e *Embedder) HealthCheck() error {
+	url := e.BaseURL + "/health"
+	resp, err := e.Client.Get(url)
+	if err != nil {
+		return fmt.Errorf("embedding service unreachable: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("embedding service error: status %d", resp.StatusCode)
+	}
+	return nil
 }

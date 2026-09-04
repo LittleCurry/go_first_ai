@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能客服</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <!-- 头部 -->
+    <header class="header">
+        <h1>🤖 AI智能客服</h1>
+        <p>7×24小时在线，随时为您服务</p>
+    </header>
+
+    <!-- 聊天区域 -->
+    <div class="chat-area" id="chatArea">
+        <div class="welcome-message">
+            <div class="avatar">🤖</div>
+            <div class="bubble bot">您好！我是AI智能客服助手，请问有什么可以帮您？</div>
+        </div>
+    </div>
+
+    <!-- 输入区域 -->
+    <div class="input-area">
+        <input
+                type="text"
+                id="messageInput"
+                placeholder="请输入您的问题..."
+                autocomplete="off"
+        >
+        <button id="sendBtn">发送</button>
+        <button id="clearBtn" class="clear-btn">清空</button>
+    </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
