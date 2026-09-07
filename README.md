@@ -4,4 +4,4 @@
 * go run cmd/server/main.go
 * http://localhost:8000
 
-<img src="./images/demo.png" width="600" />
+<img src="./web/img/1.jpg" width="600" />
