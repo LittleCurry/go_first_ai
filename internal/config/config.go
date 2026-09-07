@@ -14,6 +14,23 @@ type Config struct {
 	Vector VectorConfig
 	RAG    RAGConfig
 	Agent  AgentConfig
+	Redis  RedisConfig
+	MySQL  MySQLConfig
+}
+
+type MySQLConfig struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+	Database string
+}
+
+type RedisConfig struct {
+	Host     string
+	Port     string
+	Password string
+	DB       int
 }
 
 type ServerConfig struct {
@@ -81,6 +98,19 @@ func LoadConfig() error {
 		Agent: AgentConfig{
 			MaxIterations: getEnvAsInt("AGENT_MAX_ITERATIONS", 3),
 			Timeout:       getEnvAsInt("AGENT_TIMEOUT", 30),
+		},
+		Redis: RedisConfig{
+			Host:     getEnv("REDIS_HOST", "localhost"),
+			Port:     getEnv("REDIS_PORT", "6379"),
+			Password: getEnv("REDIS_PASSWORD", ""),
+			DB:       getEnvAsInt("REDIS_DB", 0),
+		},
+		MySQL: MySQLConfig{
+			Host:     getEnv("MYSQL_HOST", "127.0.0.1"),
+			Port:     getEnv("MYSQL_PORT", "3306"),
+			User:     getEnv("MYSQL_USER", "root"),
+			Password: getEnv("MYSQL_PASSWORD", ""),
+			Database: getEnv("MYSQL_DATABASE", "ai_customer_service"),
 		},
 	}
 

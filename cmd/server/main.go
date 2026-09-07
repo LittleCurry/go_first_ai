@@ -7,16 +7,25 @@ import (
 	"syscall"
 
 	"github.com/LittleCurry/go_first_ai/internal/config"
+	"github.com/LittleCurry/go_first_ai/internal/db"
 	"github.com/LittleCurry/go_first_ai/internal/handler"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	// 加载配置
 	if err := config.LoadConfig(); err != nil {
 		log.Fatal("Failed to load config:", err)
 	}
 
+	// 初始化MySQL
+	if err := db.InitMySQL(&config.AppConfig.MySQL); err != nil {
+		log.Fatal("Failed to init MySQL:", err)
+	}
+	defer db.CloseMySQL()
+
+	// 设置Gin模式
 	if !config.AppConfig.Server.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -35,8 +44,8 @@ func main() {
 
 	chatHandler := handler.NewChatHandler(config.AppConfig)
 
-	// SSE流式聊天（改为POST）
 	r.POST("/api/chat/stream", chatHandler.StreamChat)
+	r.DELETE("/api/chat/session", chatHandler.ClearSession)
 
 	addr := ":" + config.AppConfig.Server.Port
 	log.Printf("🚀 Server starting on http://localhost%s", addr)

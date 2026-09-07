@@ -35,6 +35,13 @@ type ChatRequest struct {
 	History   []Message `json:"history,omitempty"` // 最近N轮对话
 }
 
+// Action 建议操作按钮
+type Action struct {
+	Label  string                 `json:"label"`  // 按钮显示文字
+	Action string                 `json:"action"` // 操作类型: repurchase, refund, track, view_order, view_coupons
+	Data   map[string]interface{} `json:"data"`   // 操作参数
+}
+
 // ChatResponse API响应
 type ChatResponse struct {
 	SessionID      string   `json:"session_id"`
@@ -43,8 +50,9 @@ type ChatResponse struct {
 	Intent         string   `json:"intent"`
 	Confidence     float64  `json:"confidence"`
 	Sources        []string `json:"sources,omitempty"`
-	NeedTransfer   bool     `json:"need_transfer,omitempty"` // 是否需要转人工
+	NeedTransfer   bool     `json:"need_transfer,omitempty"`
 	TransferReason string   `json:"transfer_reason,omitempty"`
+	Actions        []Action `json:"actions,omitempty"` // 新增：建议操作按钮
 }
 
 // KnowledgeEntry 知识库条目
@@ -74,4 +82,49 @@ type RAGResult struct {
 	Score    float64 `json:"score"`
 	Source   string  `json:"source"` // 知识ID或文档名
 	Category string  `json:"category"`
+}
+
+// Order 订单
+type Order struct {
+	OrderID         string      `json:"order_id"`
+	UserID          string      `json:"user_id"`
+	Status          string      `json:"status"`
+	StatusText      string      `json:"status_text"`
+	TotalAmount     float64     `json:"total_amount"`
+	ShippingAddress string      `json:"shipping_address"`
+	TrackingNumber  string      `json:"tracking_number"`
+	TrackingCompany string      `json:"tracking_company"`
+	Items           []OrderItem `json:"items"`
+	Logistics       []Logistics `json:"logistics"`
+	CreatedAt       time.Time   `json:"created_at"`
+	UpdatedAt       time.Time   `json:"updated_at"`
+}
+
+// OrderItem 订单商品
+type OrderItem struct {
+	ProductName  string  `json:"product_name"`
+	ProductImage string  `json:"product_image"`
+	Quantity     int     `json:"quantity"`
+	Price        float64 `json:"price"`
+	Subtotal     float64 `json:"subtotal"`
+}
+
+// Logistics 物流轨迹
+type Logistics struct {
+	Status      string    `json:"status"`
+	StatusText  string    `json:"status_text"`
+	Location    string    `json:"location"`
+	Description string    `json:"description"`
+	Time        time.Time `json:"time"`
+}
+
+// Coupon 优惠券
+type Coupon struct {
+	CouponCode    string    `json:"coupon_code"`
+	Name          string    `json:"name"`
+	DiscountType  string    `json:"discount_type"`
+	DiscountValue float64   `json:"discount_value"`
+	MinAmount     float64   `json:"min_amount"`
+	Status        string    `json:"status"`
+	ExpireAt      time.Time `json:"expire_at"`
 }

@@ -26,7 +26,7 @@ func NewChromaClient(cfg *config.Config) *ChromaClient {
 		BaseURL:      "http://localhost:8001",
 		Tenant:       "default_tenant",
 		Database:     "default_database",
-		CollectionID: "b2b3048b-4151-4b9b-9433-cf0319469d17", // 直接使用UUID
+		CollectionID: "fdb1f68e-ffd1-4e38-a459-2fc3926cad0a", // 直接使用UUID
 		HTTPClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},

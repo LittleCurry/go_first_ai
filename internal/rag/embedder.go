@@ -45,7 +45,7 @@ func (e *Embedder) GetEmbeddings(texts []string) ([][]float64, error) {
 	// 注意：URL是 /embed，不是 /
 	url := e.BaseURL + "/embed"
 
-	fmt.Printf("🔍 请求Embedding URL: %s\n", url) // 添加这行调试
+	//fmt.Printf("🔍 请求Embedding URL: %s\n", url) // 添加这行调试
 
 	reqBody := EmbedRequest{
 		Input: texts,
